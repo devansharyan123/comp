@@ -5,9 +5,8 @@ import Footer from '../Components/Footer';
 export const Landing = () => {
   return (
     <>
-      <Navbar />
+    
       <Hero />
-      <Footer />
     </>
   )
 }
