@@ -1,11 +1,15 @@
-// src/App.js
+
 import React from 'react';
-import Product from './Pages/Product';
-import './App.css';
+
+import { useState } from 'react'
+import Product from './Pages/Product'
+import Landing from './Pages/Landing'
+
 
 function App() {
   return (
     <>
+      <Landing />
       <Product />
     </>
   );
