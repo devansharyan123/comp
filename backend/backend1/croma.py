@@ -1,30 +1,40 @@
+import requests
 from bs4 import BeautifulSoup
-import requests 
 
-def croma_scrape(product_title):
-    url = f'https://www.croma.com/searchB?q={product_title}%3Arelevance&text={product_title}'
+def reldig_scrape(url):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         'Accept-Language': 'en-US,en;q=0.9',
     }
+
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-    except:
-        print('Yahi maa chud gyi')
+    except requests.RequestException as e:
+        print(f'Error fetching page: {e}')
+        return None, None
 
     soup = BeautifulSoup(response.content, 'html.parser')
 
-    # Extract product title
-    product_title = soup.find('h3',{"class":"product-title plp-prod-title 999"})
-    if product_title =='':
-        product_title = product_title.get_text(strip=True)
+    # Extract the first product title
+    product_title_element = soup.find('p', class_='sp__name')
+    if product_title_element:
+        product_title = product_title_element.get_text(strip=True)
     else:
-        product_title = 'Acer Nitro 5 Intel Core i5 13th Gen Gaming Laptop (16GB, 512GB, Windows 11 Home, 6GB Graphics, 15.6 inch 144 Hz FHD IPS Display, NVIDIA GeForce RTX 4050, MS Office 2021, Obsidian Black, 2.13 KG)'
+        product_title = None
 
-    # Extract product price
-    price_element= (soup.find('span', {"class": "amount plp-srp-new-amount"}))
-    print(price_element,product_title)
-    return product_title, price_element
-croma_scrape("Acer nitro 5 i5 13th gen")
+    # Extract the first product price using your specific logic
+    product_price = None
+    price_element = soup.find('span', class_='TextWeb__Text-sc-1cyx778-0 gimCrs')
+    if price_element:
+        nested_spans = price_element.find_all('span')
+        if len(nested_spans) > 1:  # Ensure there are enough spans to index
+            product_price = nested_spans[1].get_text(strip=True)
 
+    print("Product Title:", product_title)
+    print("Product Price:", product_price)
+    return product_title, product_price, url
+
+# Example usage
+url = "https://www.reliancedigital.in/search?q=acer%20nitro%205%20i5:relevance"
+reldig_scrape(url)

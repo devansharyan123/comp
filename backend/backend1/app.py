@@ -53,7 +53,7 @@ def main():
             'reldig_url': reldig_url
         
         }
-
+        print(response_data)
         # Check if the product price is within the budget
         if float(product_price) <= float(budget):
             email_notification(url,user_email)

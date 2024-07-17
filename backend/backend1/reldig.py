@@ -1,8 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-def reldig_scrape(product_title):
-    url = f'https://www.reliancedigital.in/search?q={product_title[:5]}:relevance'
+def reldig_scrape(url):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         'Accept-Language': 'en-US,en;q=0.9',
@@ -34,9 +33,10 @@ def reldig_scrape(product_title):
                 product_price = nested_spans[2].get_text(strip=True)
                 break  # Assuming we only want the first matching product's price
 
-    print(product_title, product_price)
-    return product_title, product_price,url
+    print("Product Title:", product_title)
+    print("Product Price:", product_price)
+    return product_title, product_price
 
 # Example usage
-reldig_scrape("acer nitro 5")
-
+url = "https://www.reliancedigital.in/search?q=acer%20nitro%205%20i5:relevance"
+reldig_scrape(url)
