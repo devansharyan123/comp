@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests 
 from database import price_history
 
+
 def price_sccrape(product_title):
     url = f'https://www.pricebefore.com/{product_title[0:7]}-p717345.html'
     headers = {

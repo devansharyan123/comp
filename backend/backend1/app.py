@@ -1,4 +1,5 @@
-
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from amazonAZ import scrape_amazon
 from database import product_history
 from notification import email_notification
@@ -8,41 +9,52 @@ from reldig import extract_rproduct_name
 from dataTrackk import save_price_to_json
 from priceHIGHlow import price_sccrape
 
+app = Flask(__name__)
+CORS(app, resources={r'/': {'origins': ['*']}})
+
+@app.route('/', methods=['POST'])
 def main():
-    url, budget = user_input()
-    product_title, product_price = scrape_amazon(url)
-    if product_title: 
-       highest_price,lowest_price,current_price= price_sccrape(product_title=product_title)
-       fproduct_title, fproduct_price = extract_product_name(url)              #extract
-    #    cproduct_title, cproduct_price = croma_scrape(product_title)
-       #rproduct_title, rproduct_price = extract_rproduct_name(url)
-        
-       product_history(product_title, product_price, company_name='amazon',highest_price=highest_price,lowest_price=lowest_price,current_price=product_price)       #store
-       save_price_to_json(company_name='Amazon',product_title=product_title,product_price=product_price,)
-        
-       product_history(fproduct_title, fproduct_price, company_name='flipkart',highest_price=highest_price,lowest_price=lowest_price,current_price=fproduct_price)
-       save_price_to_json(company_name='Flipkart',product_title=fproduct_title,product_price=product_price)
-        
-    #    product_history(cproduct_title, cproduct_price, company_name='croma',highest_price=highest_price,lowest_price=lowest_price,current_price=cproduct_price)
-    #    save_price_to_json(company_name='Croma',product_title=cproduct_title,product_price=cproduct_price)
+    data = request.json
+    if not data or 'url' not in data or 'budget' not in data:
+        return jsonify({'error': 'Missing url or budget'}), 400
+    
+    url = data['url']
+    budget = data['budget']
 
-    #    product_history(rproduct_title,rproduct_price,company_name='reliance diigital',highest_price=highest_price,lowest_price=lowest_price,current_price=cproduct_price)
-    #    save_price_to_json(company_name='Reliance Digital',product_title=rproduct_title,product_price=rproduct_price)
-        
-       if float(product_price) <= budget:
-            print('This product is within your budget.')
+    product_title, product_price, product_image= scrape_amazon(url)
+    if product_title:
+        highest_price, lowest_price, current_price = price_sccrape(product_title=product_title)
+        fproduct_title, fproduct_price = extract_product_name(url)  # extract from Flipkart
+
+        # Store product history and save to JSON
+        product_history(product_title, product_price, company_name='Amazon', highest_price=highest_price, lowest_price=lowest_price, current_price=current_price)
+        save_price_to_json(company_name='Amazon', product_title=product_title, product_price=product_price)
+
+        product_history(fproduct_title, fproduct_price, company_name='Flipkart', highest_price=highest_price, lowest_price=lowest_price, current_price=fproduct_price)
+        save_price_to_json(company_name='Flipkart', product_title=fproduct_title, product_price=fproduct_price)
+
+        response_data = {
+            'product_title': product_title,
+            'product_price': product_price,
+            'highest_price': highest_price,
+            'lowest_price': lowest_price,
+            'current_price': current_price,
+            'prouct_image': product_image,
+            'message': ''
+        }
+
+        # Check if the product price is within the budget
+        if float(product_price) <= float(budget):
             email_notification(url)
-       else:
-            print('This product is not within your budget.')
+            response_data['message'] = 'This product is within your budget.'
+        else:
+            response_data['message'] = 'Product not in budget.'
+        
+        return jsonify(response_data)
     else:
-        print('Could not retrieve product details.')
-
-def user_input():
-    url = input('Product URL: ')
-    budget = float(input('Budget: '))
-    return url, budget
+        return jsonify({'error': 'Could not retrieve product details.'}), 500
 
 if __name__ == '__main__':
-    main()
-    
-#https://www.amazon.in/Acer-i5-12500H-Processor-15-6-inch-AN515-58/dp/B09X79JDC5/
+    app.run(debug=True)
+
+# Test URL: https://www.amazon.in/Acer-i5-12500H-Processor-15-6-inch-AN515-58/dp/B09X79JDC5/

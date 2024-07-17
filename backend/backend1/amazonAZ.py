@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import requests 
+import requests
 
 def scrape_amazon(url):
     headers = {
@@ -12,7 +12,7 @@ def scrape_amazon(url):
         response.raise_for_status()
     except requests.RequestException as e:
         print(f'Error fetching page: {e}')
-        return None, None
+        return None, None, None
 
     soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -27,6 +27,23 @@ def scrape_amazon(url):
     product_price = None
     price_element = soup.find('span', {'class': 'a-price-whole'})
     if price_element:
-        product_price = float(price_element.text.replace(',',''))
+        product_price = float(price_element.get_text(strip=True).replace(',', ''))
 
-    return product_title, product_price
+    # Extract product image
+    product_image = None
+    image_element = soup.find('img', {'id': 'landingImage'})
+    if image_element:
+        product_image = image_element.get('src')
+
+    
+    return product_title, product_price, product_image
+
+# url = input("Enter the Amazon product URL: ")
+# title, price, image = scrape_amazon(url)
+
+# if title and price and image:
+#     print(f"Product Title: {title}")
+#     print(f"Product Price: {price}")
+#     print(f"Product Image URL: {image}")
+# else:
+#     print("Failed to retrieve product details.")

@@ -1,4 +1,3 @@
-
 from bs4 import BeautifulSoup
 import requests 
 
@@ -21,10 +20,11 @@ def croma_scrape(product_title):
     if product_title =='':
         product_title = product_title.get_text(strip=True)
     else:
-        product_title = 'acer Nitro 5 Intel Core i5 13th Gen Gaming Laptop (16GB, 512GB, Windows 11 Home, 6GB Graphics, 15.6 inch 144 Hz FHD IPS Display, NVIDIA GeForce RTX 4050, MS Office 2021, Obsidian Black, 2.13 KG)'
+        product_title = 'Acer Nitro 5 Intel Core i5 13th Gen Gaming Laptop (16GB, 512GB, Windows 11 Home, 6GB Graphics, 15.6 inch 144 Hz FHD IPS Display, NVIDIA GeForce RTX 4050, MS Office 2021, Obsidian Black, 2.13 KG)'
 
     # Extract product price
-    price_element= (soup.find_all('div', {"class": "new-price plp-srp-new-price-cont"}))
-    #print(price_element,product_title)
+    price_element= (soup.find('span', {"class": "amount plp-srp-new-amount"}))
+    print(price_element,product_title)
     return product_title, price_element
-#croma_scrape("Acer nitro 5 i5 13th gen")
+croma_scrape("Acer nitro 5 i5 13th gen")
+
