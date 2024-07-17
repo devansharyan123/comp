@@ -4,7 +4,6 @@ from amazonAZ import scrape_amazon
 from database import product_history
 from notification import email_notification
 from flipkart import extract_product_name, flipkart_scrape
-from croma import croma_scrape
 from reldig import reldig_scrape
 from dataTrackk import save_price_to_json
 from priceHIGHlow import price_sccrape
@@ -20,7 +19,7 @@ def main():
     
     url = data['url']
     budget = data['budget']
-    user_email = data['user_email']
+    user_email = data['email']
     product_title, product_price, product_image= scrape_amazon(url)
     if product_title:
         highest_price, lowest_price, current_price = price_sccrape(product_title=product_title)

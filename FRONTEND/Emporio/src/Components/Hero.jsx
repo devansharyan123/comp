@@ -5,6 +5,7 @@ import { FaSearch } from 'react-icons/fa';
 const Hero = () => {
   const [url, setUrl] = useState('');
   const [budget, setBudget] = useState('');
+  const [email, setEmail] = useState('');
   const [productDetails, setProductDetails] = useState(null);
   const [message, setMessage] = useState('');
 
@@ -19,12 +20,18 @@ const Hero = () => {
       return;
     }
 
+    if (email.trim() === '') {
+      alert('Please enter your email');
+      return;
+    }
+
     try {
       const response = await axios.post(
         'http://localhost:5000/',
         {
           url: url,
-          budget: budget
+          budget: budget,
+          email: email
         },
         {
           headers: {
@@ -66,6 +73,15 @@ const Hero = () => {
                 className="flex-grow p-2 rounded-2xl text-gray-500 bg-gray-700" 
                 value={budget}
                 onChange={(e) => setBudget(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center rounded-2xl h-[45px] p-2 w-full md:w-[350px] bg-gray-700">
+              <input 
+                type="email" 
+                placeholder="Enter your Email" 
+                className="flex-grow p-2 rounded-2xl text-gray-500 bg-gray-700" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
