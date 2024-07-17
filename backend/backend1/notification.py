@@ -1,8 +1,8 @@
 import smtplib
 email = 'arush3218@gmail.com'
-password = 'fecttaurkgnlcsux'
+password = 'vclrcajjiqxfbydl'
 
-def email_notification(url):
+def email_notification(url,user_email):
     connection = smtplib.SMTP('smtp.gmail.com')
     connection.starttls()
     connection.login(user=email, password=password)
@@ -12,8 +12,9 @@ def email_notification(url):
         f'The price of the product you\'ve been wanting has dropped below your budget! '
         f'Grab the offer now!!\n{url}\n'
     )
-    recipient_email = input('Enter your email:')
+    recipient_email = user_email
     connection.sendmail(from_addr=email, to_addrs=recipient_email, msg=message)
     connection.close()
     
     return 'Email sent successfully.'
+# email_notification("step this way ",)

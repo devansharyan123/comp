@@ -79,4 +79,4 @@ def flipkart_scrape(product_title):
     # For product image
     # product_image = soup.find('div', {'class': '_4WELSP'})
     # print(product_image)
-    return product_title, product_price
+    return product_title, product_price, url
